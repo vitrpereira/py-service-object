@@ -34,7 +34,7 @@ class CreateUser(ServiceObject):
 ## Using the ServiceObject
 
 ```python
-service = CreateUser(user_params)
+service = CreateUser(user_params).call()
 
 if service.success:
     user = service.result
