@@ -1,5 +1,9 @@
 # py-service-object
 
+![Header](resources/header.png)
+
+[![PyPi](https://img.shields.io/pypi/v/py-service-object.svg)](https://pypi.org/project/py-service-object/)
+
 A Python implementation of the Service Object pattern, inspired by Ruby's SimpleCommand gem.
 
 ## Installation
