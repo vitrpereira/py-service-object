@@ -14,9 +14,9 @@ pip install py-service-object
 from py_service_object import ServiceObject
 
 class CreateUser(ServiceObject):
-    def init(self, user_params):
+    def __init__(self, user_params):
         self.user_params = user_params
-        super().init()
+        super().__init__()
 
     def call(self):
         try:
@@ -31,10 +31,11 @@ class CreateUser(ServiceObject):
 
 ```python
 service = CreateUser(user_params)
+
 if service.success:
     user = service.result
 else:
-errors = service.errors
+    errors = service.errors
 ```
 
 ## Features
