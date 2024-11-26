@@ -30,7 +30,7 @@ class ServiceObject(ABC):
                     return None
 
     Usage:
-        service = CreateUser(user_params)
+        service = CreateUser(user_params).call()
         if service.success:
             user = service.result
         else:
