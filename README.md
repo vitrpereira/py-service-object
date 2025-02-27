@@ -28,13 +28,14 @@ class CreateUser(ServiceObject):
             return user
         except Exception as e:
             self.errors.append({"message": str(e)})
-            return None
+            return self
 ```
 
 ## Using the ServiceObject
 
 ```python
-service = CreateUser(user_params).call()
+service = CreateUser(user_params)
+service.call()
 
 if service.success:
     user = service.result
