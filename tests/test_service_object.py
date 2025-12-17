@@ -76,13 +76,26 @@ def test_result_caching():
 
     service = CountingService()
 
-    # Access result multiple times
+    # Access result multiple times without calling call() directly
     assert service.result == 1
     assert service.result == 1
     assert service.result == 1
 
     # Verify call() was only executed once
     assert service.call_count == 1
+
+    # Now verify that calling call() explicitly before accessing result
+    # does not cause call() to be executed again when result is accessed
+    service2 = CountingService()
+
+    # Explicitly call the service once
+    assert service2.call() == 1
+    assert service2.call_count == 1
+
+    # Accessing result should return the cached value without incrementing call_count
+    assert service2.result == 1
+    assert service2.result == 1
+    assert service2.call_count == 1
 
 
 def test_multiple_errors():

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from functools import lru_cache, cached_property
+from functools import cached_property
 from typing import Any, List, Dict
 
 # flake8: noqa: E501
@@ -55,8 +55,32 @@ class ServiceObject(ABC):
 
     def __init__(self):
         self._errors = []
+        self._result = None
+        self._has_run = False
 
-    @lru_cache
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        original_call = cls.__dict__.get("call")
+        if original_call is None:
+            return
+
+        if getattr(original_call, "__wrapped_by_service_object__", False):
+            return
+
+        def wrapped(self, *args, **kwargs):
+            result = original_call(self, *args, **kwargs)
+            self._result = result
+            self._has_run = True
+            return result
+
+        wrapped.__name__ = original_call.__name__
+        wrapped.__doc__ = original_call.__doc__
+        wrapped.__wrapped__ = original_call
+        wrapped.__wrapped_by_service_object__ = True
+        
+        setattr(cls, "call", wrapped)
+
     @abstractmethod
     def call(self) -> Any:
         """
@@ -75,7 +99,7 @@ class ServiceObject(ABC):
                     self.errors.append({"message": str(e.message)})
                     return None
         """
-        pass
+        raise NotImplementedError("call method must be implemented by subclass")
 
     @cached_property
     def result(self) -> Any:
@@ -86,7 +110,9 @@ class ServiceObject(ABC):
         Returns:
             Any: The return value from the `call` method implementation.
         """
-        return self.call()
+        if not getattr(self, "_has_run", False):
+            self.call()
+        return self._result
 
     @property
     def success(self) -> bool:
